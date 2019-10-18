@@ -81,6 +81,11 @@ task integrationTest(type: Test) {
     }
     check.dependsOn it
     shouldRunAfter test
+    testLogging.showStandardStreams = true
+
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
 }
 
 shadowJar {

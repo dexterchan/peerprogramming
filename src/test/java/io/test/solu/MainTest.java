@@ -14,6 +14,7 @@ class MainTest {
 
     @BeforeEach
     void setUp() {
+        System.out.println("This is unit test");
     }
 
     @AfterEach
