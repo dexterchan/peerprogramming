@@ -7,9 +7,12 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.opentest4j.AssertionFailedError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
+import java.time.Duration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -50,5 +53,18 @@ class MainTest {
                     assertEquals(m.getMynumber(),100);
                 }
                 );
+    }
+
+    @Test
+    public void testTimeOUt(){
+        assertThrows(AssertionFailedError.class,
+                ()->{
+                    assertTimeout(Duration.ofMillis(1), () -> {
+                        Thread.sleep(5);
+                        log.debug("I got here");
+                    });
+                }
+                );
+
     }
 }
