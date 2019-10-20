@@ -1,5 +1,7 @@
 package io.test.solu;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import io.test.solu.model.MessageTestLombok;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.data.Offset;
@@ -13,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 
 import java.time.Duration;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -65,6 +68,25 @@ class MainTest {
                     });
                 }
                 );
+
+    }
+
+    @Test
+    void testImmutableMap(){
+        final Map<String, MessageTestLombok> m =
+                ImmutableMap.of(
+                        "Piglet",new MessageTestLombok("Hi Piglet"),
+                        "Pooh",new MessageTestLombok("Hi Pooh"));
+        assertThat(m).hasSize(2);
+        assertThat(m.get("Piglet").getMyText()).isEqualTo("Hi Piglet");
+        assertThrows(UnsupportedOperationException.class,
+                ()->{
+                    m.put("new",new MessageTestLombok("new"));
+                });
+
+        Map<String,MessageTestLombok> m2=Maps.newHashMap(m);
+        m2.put("new",new MessageTestLombok("new"));
+        assertThat(m2).hasSize(3);
 
     }
 }
