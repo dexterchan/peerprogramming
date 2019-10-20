@@ -2,6 +2,8 @@ apply plugin: 'application'
 apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'war'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
 
 group 'io.test.solu'
 version '1.0-SNAPSHOT'
@@ -10,16 +12,23 @@ sourceCompatibility = 1.8
 
 buildscript {
     repositories {
+        mavenCentral()
         jcenter()
     }
     dependencies {
         classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.2'
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.1.6.RELEASE")
     }
 }
+
 repositories {
     mavenCentral()
 }
 
+bootJar {
+    baseName = 'gs-rest-service'
+    version =  '0.1.0'
+}
 mainClassName = 'io.test.solu.Main'
 
 ext{
@@ -47,14 +56,13 @@ dependencies {
     //Not working in gradle 5!!!
     //providedCompile group: 'org.projectlombok', name: 'lombok', version: '1.18.10'
 
-
-
-
     compileOnly("org.projectlombok:lombok:${lombokVersion}")
     testCompileOnly("org.projectlombok:lombok:${lombokVersion}")
     annotationProcessor("org.projectlombok:lombok:${lombokVersion}")
     testAnnotationProcessor("org.projectlombok:lombok:${lombokVersion}")
 
+    compile("org.springframework.boot:spring-boot-starter-web")
+    testCompile('org.springframework.boot:spring-boot-starter-test')
 
     testCompile group: 'org.mockito', name: 'mockito-core', version: "$mockitoVersion"
     testCompile group: 'org.mockito', name: 'mockito-junit-jupiter', version: "$mockitoVersion"
