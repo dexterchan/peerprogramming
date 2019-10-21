@@ -15,7 +15,16 @@ import org.slf4j.LoggerFactory;
 
 
 import java.time.Duration;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -87,6 +96,52 @@ class MainTest {
         Map<String,MessageTestLombok> m2=Maps.newHashMap(m);
         m2.put("new",new MessageTestLombok("new"));
         assertThat(m2).hasSize(3);
+
+    }
+    @Test
+    void testListToMap(){
+        List<MessageTestLombok> mList = Arrays.asList(
+          new MessageTestLombok("Hi Piglet"),
+          new MessageTestLombok("Hi Pooh"),
+          new MessageTestLombok("Hi Tiger") ,
+          new MessageTestLombok("Hi Kangeroo")
+        );
+        Pattern pattern = Pattern.compile("Hi (\\w+)");
+
+        Supplier<Stream< MessageTestLombok> > supplier = ()-> mList.stream();
+
+      boolean matchHIALL=supplier.get().allMatch(m->m.getMyText().indexOf("Hi")==0);
+        assertTrue(matchHIALL);
+
+        Map<String, MessageTestLombok> mapMessage = supplier.get().collect(Collectors.toMap(
+                m->{
+
+                    Matcher match = pattern.matcher(m.getMyText());
+                    if(match.matches()){
+                        return match.group(1);
+                    }else{
+                        throw new IllegalArgumentException(m.getMyText());
+                    }
+
+                }, Function.identity()
+        ));
+
+        assertThat(mapMessage).hasSize(mList.size());
+        assertNotNull(mapMessage.get("Piglet"));
+
+        assertAll("test optional",
+                ()->{
+                    String tigerout=Optional.ofNullable(mapMessage.get("Tiger")).map(m->m.getMyText()).orElse("Not found");
+                    assertEquals(tigerout,"Hi Tiger");
+                },
+                ()->{
+                    String tigerout=Optional.ofNullable(mapMessage.get("Kangeroo")).map(m->m.getMyText()).orElse("Not found");
+                    assertEquals(tigerout,"Hi Kangeroo");
+                },
+                ()->{
+                    String tigerout=Optional.ofNullable(mapMessage.get("Penguin")).map(m->m.getMyText()).orElse("Not found");
+                    assertEquals(tigerout,"Not found");
+                });
 
     }
 }
