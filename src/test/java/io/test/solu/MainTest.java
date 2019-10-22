@@ -5,20 +5,14 @@ import com.google.common.collect.Maps;
 import io.test.solu.model.MessageTestLombok;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.data.Offset;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.opentest4j.AssertionFailedError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
 import java.time.Duration;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
@@ -42,6 +36,7 @@ class MainTest {
     void tearDown() {
     }
 
+    @Disabled
     @Test
     void testJunit5setup() {
         double floatNumber=0.01;
@@ -67,6 +62,7 @@ class MainTest {
                 );
     }
 
+    @Disabled
     @Test
     public void testTimeOUt(){
         assertThrows(AssertionFailedError.class,
@@ -80,6 +76,7 @@ class MainTest {
 
     }
 
+    @Disabled
     @Test
     void testImmutableMap(){
         final Map<String, MessageTestLombok> m =
@@ -142,6 +139,13 @@ class MainTest {
                     String tigerout=Optional.ofNullable(mapMessage.get("Penguin")).map(m->m.getMyText()).orElse("Not found");
                     assertEquals(tigerout,"Not found");
                 });
+        String uuidstr = UUID.randomUUID().toString();
+        assertThat(uuidstr).satisfies(x-> {
+            if(x.length()==0){
+                throw new IllegalArgumentException();
+            }
+        }
+        );
 
     }
 }
