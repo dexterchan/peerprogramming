@@ -4,70 +4,102 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
+//time : O(N) space: O(N)
 public class Calculator {
 
-    class MyStack{
-        Stack<Double> arguments = new Stack<>();
-        Stack<Character> operator = new Stack<>();
-    }
-    class MyArgList{
-        List<Double> arguments = new ArrayList<>();
-        List<Character> operator = new ArrayList<>();
+    public double calculate(String eqt){
+        InterimResult interimResult = this.calculateHelper(eqt);
+        return interimResult.result;
     }
 
-    protected MyArgList convertArgList (String str){
-
-
-        MyArgList myList = new MyArgList();
-        //read the string
-        char[] myCharArray = str.toCharArray();
-
-        double lastArgument = 0;
-        for ( char c : myCharArray){
-
-            if(c=='+' || c=='-' || c == '*' || c == '/'){
-                myList.operator.add(c);
-                myList.arguments.add(lastArgument);
-                lastArgument=0;
-
-            }else{
-                lastArgument = Character.getNumericValue(c) + lastArgument *10;
-            }
-        }
-        myList.arguments.add(lastArgument);
-
-
-        return myList;
+    private class InterimResult{
+        double result;
+        int jump;
     }
 
-
-    double calculateArgumentList(MyArgList argList){
-        //iterate the operator
-        double r=0;
-        MyStack stack = new MyStack();
-        for( Character c: argList.operator){
-            highPredrence
-        }
-
-    }
-
-    boolean highPredrence(Character c){
-        if(c=='*' || c=='/'){
-            return true;
-        }else{
+    private boolean isHigher(Character c1, Character c){
+        if (c1 == '*' || c1 == '/'){
             return false;
         }
+        if (c != null && (c == '*' || c =='/')){
+            return true;
+        }else
+            return false;
     }
 
-/*
-Character myLastOperator = myStack.operator.peek();
-            if(myStack.operator.peek() == '*' || myStack.operator.peek() == '/'){
+    private InterimResult calculateHelper(String eqt){
+        int l = eqt.length();
 
+        int ptr = 0;
+        InterimResult interimResult = new InterimResult();
+
+        double res = Double.parseDouble(String.valueOf(eqt.charAt(0)));
+        while (ptr < l-2){
+            char operator = eqt.charAt(ptr + 1);
+            double operand = Double.parseDouble(String.valueOf(eqt.charAt(ptr + 2)));
+            Character nextOperator = ptr<l-4 ? eqt.charAt(ptr + 3) : null;
+
+            InterimResult interimResultOperand = null;
+            if (this.isHigher(operator, nextOperator) ){
+                String subEqt = eqt.substring(ptr + 2);
+                if (operator=='-'){
+                    subEqt = subEqt.replaceAll("\\+","_");
+                    subEqt = subEqt.replaceAll("-", "+");
+                    subEqt = subEqt.replaceAll("_", "-");
+                }
+                interimResultOperand = this.calculateHelper(subEqt);
+            }else{
+                interimResultOperand = new InterimResult();
+                interimResultOperand.result = operand;
+                interimResultOperand.jump = 2;
             }
- */
+
+            switch (operator){
+                case '+':
+                    res = this.add(res, interimResultOperand.result);
+                    ptr += interimResultOperand.jump;
+                    break;
+                case '-':
+                    res = this.minus(res, interimResultOperand.result);
+                    ptr += interimResultOperand.jump;
+                    break;
+                case '*':
+                    res = this.multiply(res, interimResultOperand.result);
+                    ptr += interimResultOperand.jump;
+                    break;
+                case '/':
+                    res = this.divide(res, interimResultOperand.result);
+                    ptr += interimResultOperand.jump;
+                    break;
+            }
+
+        }
+        interimResult.result = res;
+        interimResult.jump = ptr + 2;
+        return interimResult;
+    }
+
+    private double add(double x, double y){
+        return x + y;
+    }
+    private double minus (double x, double y){
+        return x - y;
+    }
+    private double multiply(double x, double y){
+        return x * y;
+    }
+    private double divide (double x, double y){
+        return x/y;
+    }
+
+
 
     public static void main (String[] args ){
-        String eqt = "5+2*3";
+
+        String eqt = "5+2*3-7/2*4+8*2";
+        //eqt = "5*2-4+3*2";
+        Calculator calculator = new Calculator();
+        System.out.println(calculator.calculate(eqt));
     }
 
 }
